@@ -3,10 +3,10 @@ name: Docker Image CI
 on:
   push:
     branches: [ master ]
+    tags:
+      - 'v*.*.*'
   pull_request:
     branches: [ master ]
-  schedule:
-    - cron: '0 1 * * *'
 
 jobs:
 
@@ -18,6 +18,18 @@ jobs:
     
       - name: Check Out Repo 
         uses: actions/checkout@v2
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          # list of Docker images to use as base name for tags
+          images: |
+            ${{ secrets.DOCKER_HUB_USERNAME }}/centos7-golang:latest
+            ghcr.io/${{ secrets.DOCKER_HUB_USERNAME }}/centos7-golang:latest
+          # generate Docker tags based on the following events/attributes
+          tags: |
+            type=semver,pattern={{version}}
 
       - name: Login to Docker Hub
         uses: docker/login-action@v1
@@ -34,15 +46,7 @@ jobs:
 
       - name: Set up Docker Buildx
         id: buildx
-        uses: docker/setup-buildx-action@v1
-        
-#       - name: Cache Docker layers
-#         uses: actions/cache@v2
-#         with:
-#           path: /tmp/.buildx-cache
-#           key: ${{ runner.os }}-buildx-${{ github.sha }}
-#           restore-keys: |
-#             ${{ runner.os }}-buildx-        
+        uses: docker/setup-buildx-action@v1          
 
       - name: Build and push
         id: docker_build
@@ -50,13 +54,9 @@ jobs:
         with:
           context: ./
           file: ./centos7/Dockerfile
-          builder: ${{ steps.buildx.outputs.name }}
           push: true
-          tags: |
-            ${{ secrets.DOCKER_HUB_USERNAME }}/centos7-golang:latest
-            ghcr.io/${{ secrets.DOCKER_HUB_USERNAME }}/centos7-golang:latest
-#           cache-from: type=local,src=/tmp/.buildx-cache
-#           cache-to: type=local,dest=/tmp/.buildx-cache          
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}        
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}

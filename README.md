@@ -1,6 +1,6 @@
-# CentOS-Golang-Dockerfiles [![Docker Image CI](https://github.com/douglarek/CentOS-Golang-Dockerfiles/actions/workflows/docker-image.yml/badge.svg)](https://github.com/douglarek/CentOS-Golang-Dockerfiles/actions/workflows/docker-image.yml)
+# centos7-images
 
 ```
-$ docker pull ghcr.io/douglarek/centos7-golang:1.20.3
+$ docker pull ghcr.io/douglarek/centos7-golang:1.22.1
 ```
 

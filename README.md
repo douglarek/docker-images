@@ -1,6 +1,6 @@
-# centos7-images
+# golang-images
 
 ```
-$ docker pull ghcr.io/douglarek/centos7-golang:1.22.1
+docker pull ghcr.io/douglarek/rockylinux9-golang:v1.22.5
 ```
 

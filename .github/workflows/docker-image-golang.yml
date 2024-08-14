@@ -2,8 +2,14 @@ name: Docker Image for golang
 
 on:
   push:
-    tags:
-      - 'v*.*.*'
+  workflow_dispatch:
+  schedule:
+    - cron: '0 */6 * * *'
+
+permissions:
+  actions: write
+  contents: write
+
 
 jobs:
   build:
@@ -11,6 +17,18 @@ jobs:
     steps:
       - name: Check Out Repo
         uses: actions/checkout@v2
+
+      - name: Get latest Go version
+        run: |
+          # go1.23.0.linux-amd64.tar.gz 905a297f19ead44780548933e0ff1a1b86e8327bb459e92f9c0012569f76f5e3
+          GO_VER_SHA256=$(curl -s -L 'https://go.dev/dl/?mode=json' | jq -r '.[0] | .files[] | select(.os == "linux" and .arch == "amd64") | "\(.filename) \(.sha256)"')
+          GO_VER=$(echo $GO_VER_SHA256 | awk '{print $1}' | sed -E 's/go([0-9\.]+)\.linux-amd64\.tar\.gz/\1/')
+          echo "GO_VER=$GO_VER" >> $GITHUB_ENV
+          GO_SHA256=$(echo $GO_VER_SHA256 | awk '{print $2}')
+          sed -i "s/^ENV GO_VERSION .*/ENV GO_VERSION ${GO_VER}/" golang/rockylinux9-Dockerfile
+          sed -i "s/^ENV GO_SHA256SUM .*/ENV GO_SHA256SUM ${GO_SHA256}/" golang/rockylinux9-Dockerfile
+          cat golang/rockylinux9-Dockerfile
+
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v3
@@ -21,7 +39,7 @@ jobs:
             ghcr.io/${{ secrets.DOCKER_HUB_USERNAME }}/rockylinux9-golang
           # generate Docker tags based on the following events/attributes
           tags: |
-            type=ref,event=tag
+            type=raw,value=v${{ env.GO_VER }}
       - name: Login to Docker Hub
         uses: docker/login-action@v1
         with:

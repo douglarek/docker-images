@@ -27,6 +27,7 @@ jobs:
           GO_SHA256=$(echo $GO_VER_SHA256 | awk '{print $2}')
           sed -i "s/^ENV GO_VERSION .*/ENV GO_VERSION ${GO_VER}/" golang/rockylinux9-Dockerfile
           sed -i "s/^ENV GO_SHA256SUM .*/ENV GO_SHA256SUM ${GO_SHA256}/" golang/rockylinux9-Dockerfile
+          echo "RUN go telemetry off" >> golang/rockylinux9-Dockerfile # disable telemetry on go 1.23+
           cat golang/rockylinux9-Dockerfile
 
       - name: Docker meta

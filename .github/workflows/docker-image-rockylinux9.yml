@@ -1,6 +1,13 @@
 name: Docker Image for rockylinux
 
-on: push
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 */6 * * *'
+
+permissions:
+  actions: write
+  contents: write
 
 jobs:
   build:

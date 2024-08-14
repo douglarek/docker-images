@@ -1,7 +1,6 @@
 name: Docker Image for golang
 
 on:
-  push:
   workflow_dispatch:
   schedule:
     - cron: '0 */6 * * *'
@@ -9,6 +8,7 @@ on:
 permissions:
   actions: write
   contents: write
+  packages: write
 
 
 jobs:

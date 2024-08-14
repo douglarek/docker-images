@@ -1,6 +1,5 @@
-# golang-images
+# docker-images
 
-```
-docker pull ghcr.io/douglarek/rockylinux9-golang:v1.22.5
-```
+* [rockylinux](https://github.com/douglarek/docker-images/pkgs/container/rockylinux)
+* [golang in rockylinux](https://github.com/douglarek/docker-images/pkgs/container/rockylinux9-golang)
 
